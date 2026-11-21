@@ -36,7 +36,7 @@ Conforme definido na arquitetura do sistema (Seção 7.6 do Planejamento), a cam
 ## 2. Modelagem Conceitual e Lógica
 
 ### 2.1. Diagrama Entidade-Relacionamento (DER)
-O modelo lógico foi estruturado no schema `leadforge` com **10 tabelas normalizadas**, contemplando relacionamentos `1:1`, `1:N` e `N:M` resolvidos por entidades associativas (`perfil_habilidade` e `oportunidade`). *(A versão gráfica em alta resolução encontra-se aqui: 👉 [(Der)](docs/der.png)*
+O modelo lógico foi estruturado no schema `leadforge` com **10 tabelas normalizadas**, contemplando relacionamentos `1:1`, `1:N` e `N:M` resolvidos por entidades associativas (`perfil_habilidade` e `oportunidade`). *(A versão gráfica em alta resolução encontra-se aqui: 👉 [(Der)](docs/diagrams/der/der_leadforge.png)*
 
 
 
