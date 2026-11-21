@@ -36,21 +36,9 @@ Conforme definido na arquitetura do sistema (Seção 7.6 do Planejamento), a cam
 ## 2. Modelagem Conceitual e Lógica
 
 ### 2.1. Diagrama Entidade-Relacionamento (DER)
-O modelo lógico foi estruturado no schema `leadforge` com **10 tabelas normalizadas**, contemplando relacionamentos `1:1`, `1:N` e `N:M` resolvidos por entidades associativas (`perfil_habilidade` e `oportunidade`). *(A versão gráfica em alta resolução encontra-se no arquivo `docs/der_leadforge.png`).*
+O modelo lógico foi estruturado no schema `leadforge` com **10 tabelas normalizadas**, contemplando relacionamentos `1:1`, `1:N` e `N:M` resolvidos por entidades associativas (`perfil_habilidade` e `oportunidade`). *(A versão gráfica em alta resolução encontra-se aqui: 👉 [(Der)](docs/der.png)*
 
-```mermaid
-erDiagram
-    USUARIO ||--|| PERFIL_FREELANCER : "possui (1:1)"
-    PERFIL_FREELANCER ||--|{ PERFIL_HABILIDADE : "detem (1:N)"
-    HABILIDADE ||--|{ PERFIL_HABILIDADE : "compoe (1:N)"
-    USUARIO ||--o{ BUSCA : "executa (1:N)"
-    USUARIO ||--o{ OPORTUNIDADE : "gerencia carteira (1:N)"
-    EMPRESA ||--o{ OPORTUNIDADE : "prospectada em (1:N)"
-    BUSCA ||--o{ OPORTUNIDADE : "origina (0..N)"
-    EMPRESA ||--o{ EVIDENCIA : "possui sinais (1:N)"
-    OPORTUNIDADE ||--o| SUGESTAO_ABORDAGEM : "recebe IA (0..1)"
-    OPORTUNIDADE ||--o{ AUDITORIA_OPORTUNIDADE_LOG : "audita via trigger"
-```
+
 
 ### 2.2. Dicionário de Dados Completo
 
