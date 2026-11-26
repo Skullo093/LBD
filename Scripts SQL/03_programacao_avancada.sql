@@ -346,8 +346,9 @@ BEGIN
         SET texto_explicacao = EXCLUDED.texto_explicacao,
             rascunho_mensagem = EXCLUDED.rascunho_mensagem,
             modelo_ia = EXCLUDED.modelo_ia,
-            editada_em = CURRENT_TIMESTAMP;
-
+            editada_em = CURRENT_TIMESTAMP,
+			revisado_usuario = FALSE,
+			foi_editado = FALSE;
     p_sucesso := TRUE;
     p_mensagem := 'Status atualizado para "' || p_novo_status || '" e abordagem registrada com sucesso.';
 
