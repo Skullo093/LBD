@@ -20,14 +20,35 @@ Desenvolvimento de Sistemas, FATEC Sorocaba.
 | `LeadForge_Apresentacao_BancoDeDados.pptx` / `.pdf` | Slides da apresentação |
 
 ## Como executar
-Requisito: PostgreSQL 17 ou superior. Os scripts devem rodar nesta ordem:
-```bash
-createdb leadforge_db
-psql -d leadforge_db -f "Scripts SQL/01_ddl_estrutura.sql"
-psql -d leadforge_db -f "Scripts SQL/02_dml_carga_inicial.sql"
-psql -d leadforge_db -f "Scripts SQL/03_programacao_avancada.sql"
-psql -d leadforge_db -f "Scripts SQL/04_testes_e_transacoes.sql"
-```
+
+**Requisito:** PostgreSQL 17 ou superior com pgAdmin 4. Os scripts devem ser executados rigorosamente nesta ordem:
+
+1. `Scripts SQL/01_ddl_estrutura.sql`
+2. `Scripts SQL/02_dml_carga_inicial.sql`
+3. `Scripts SQL/03_programacao_avancada.sql`
+4. `Scripts SQL/04_testes_e_transacoes.sql`
+
+Siga os passos na ordem abaixo:
+
+1. **Criar o banco de dados:**
+   * Abra o **pgAdmin 4** e conecte-se ao seu servidor PostgreSQL no painel lateral esquerdo (**Servers**).
+   * Clique com o botão direito em **Databases** $\rightarrow$ **Create** $\rightarrow$ **Database...**
+   * Em **Database**, informe o nome `leadforge_db` e clique em **Save**.
+
+2. **Abrir o Query Tool:**
+   * Clique com o botão direito sobre o banco `leadforge_db` criado e selecione **Query Tool**.
+
+3. **Executar os scripts de estrutura, carga e programação avançada:**
+   * Clique no ícone de pasta (**Open File** / `Ctrl + O`) na barra superior do Query Tool.
+   * Selecione `Scripts SQL/01_ddl_estrutura.sql` e clique em **Execute** (`F5`). *(O script cria automaticamente o schema `leadforge` do zero).*
+   * Repita o mesmo processo para `Scripts SQL/02_dml_carga_inicial.sql` (`F5`).
+   * Repita o mesmo processo para `Scripts SQL/03_programacao_avancada.sql` (`F5`).
+
+4. **Executar o script de testes e transações (`04_testes_e_transacoes.sql`):**
+   * Abra `Scripts SQL/04_testes_e_transacoes.sql` no Query Tool.
+   * Como o pgAdmin interrompe a execução ao encontrar o erro proposital de chave estrangeira no **Cenário 2**, execute o arquivo em duas etapas:
+     1. **Primeira parte:** Selecione do início do arquivo até a linha `VALUES (99999, 'Teste de falha', 'Teste de falha', CURRENT_TIMESTAMP);` (dentro do Cenário 2) e aperte **`F5`**. Será exibido o erro esperado de violação da constraint `fk_sugestao_oportunidade` (`SQL state: 23503`).
+     2. **Segunda parte:** Selecione da linha `ROLLBACK TO SAVEPOINT antes_abordagem_ia;` até o final do arquivo e aperte **`F5`** para concluir o `ROLLBACK` e visualizar os planos de execução (`EXPLAIN ANALYZE`).
 O script 01 recria o schema `leadforge` do zero. O cenário 2 do script 04 provoca um erro de chave estrangeira de propósito, para demonstrar o ROLLBACK.
 ## Modelo de dados
 Dez tabelas normalizadas até a 3FN no schema `leadforge`:
