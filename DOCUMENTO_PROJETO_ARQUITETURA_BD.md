@@ -185,6 +185,14 @@ Tabela de auditoria alimentada exclusivamente por trigger para rastrear mudança
 * **2ª Forma Normal (2FN):** Todas as tabelas com chave primária simples (`SERIAL`) já satisfazem automaticamente a 2FN. Na única tabela com chave primária composta (`perfil_habilidade`, PK `(perfil_id, habilidade_id)`), o único atributo não-chave (`nivel_proficiencia`) depende integralmente de toda a chave composta (o nível pertence àquela habilidade específica daquele freelancer específico), eliminando dependências parciais.
 * **3ª Forma Normal (3FN):** Não existem dependências transitivas entre atributos não-chave. Os dados cadastrais da empresa (`nome`, `nicho`, `cidade`, `estado`, `url_site`) residem exclusivamente na tabela `empresa`, evitando que sejam repetidos em cada registro de `oportunidade` ou `evidencia`. Da mesma forma, o nome e a categoria da habilidade residem apenas em `habilidade`, e as credenciais de acesso ficam separadas em `usuario` em relação aos parâmetros regionais de `perfil_freelancer`.
 
+### 2.4. Política de Integridade Referencial (ON DELETE / ON UPDATE)
+| Ação | Onde | Justificativa |
+| --- | --- | --- |
+| ON DELETE CASCADE | perfil_freelancer, perfil_habilidade (perfil), busca, evidencia, oportunidade (usuário), sugestao_abordagem | O registro filho não tem significado sem o pai. Ao excluir um usuário ou uma empresa, seus dados dependentes são removidos juntos, sem órfãos. |
+| ON DELETE RESTRICT | oportunidade → empresa, perfil_habilidade → habilidade | Uma empresa presente em alguma carteira, ou uma habilidade em uso, não pode ser apagada. Isso protege o histórico comercial e o catálogo. |
+| ON DELETE SET NULL | oportunidade → busca | Apagar o registro de uma busca não deve apagar os leads que ela gerou; apenas a origem fica nula. |
+| ON UPDATE CASCADE | Todas as chaves estrangeiras | As chaves são SERIAL e não mudam no uso normal. Se forem renumeradas numa migração ou importação, o novo valor se propaga automaticamente, sem quebrar referências. |
+
 ---
 
 ## 3. Justificativa Técnica dos Recursos Avançados
@@ -205,7 +213,8 @@ Tabela de auditoria alimentada exclusivamente por trigger para rastrear mudança
 
 ### 3.3. Scalar Functions (Funções)
 1. **`fn_calcular_pontuacao_empresa(p_empresa_id)`:** Centraliza a fórmula oficial de pesos e multiplicadores de certeza (Seção 5) diretamente no banco. Isso garante que qualquer inserção de evidência (seja pela API FastAPI, por script de carga ou por migração) produza rigorosamente a mesma pontuação, eliminando divergências entre regras de negócio na aplicação e no banco.
-2. **`fn_classificar_prioridade_lead(p_pontuacao, p_empresa_id)`:** Padroniza a categorização comercial (`CRITICA (Imediata)`, `ALTA`, `MEDIA`, `BAIXA`) para relatórios, views e consultas do assistente.
+2. **`fn_classificar_prioridade_lead(p_pontuacao, p_empresa_id)`:** Padroniza a categorização comercial (`CRITICA (Imediata)`, `ALTA`, `MEDIA`, `BAIXA`) para relatórios, views e consultas do assistente. A classificação fica no banco para que views, relatórios, exportação e o assistente usem exatamente as mesmas faixas: CRÍTICA a partir de 75 pontos com ao menos um problema confirmado, ALTA a partir de 60, MÉDIA a partir de 35 e BAIXA abaixo disso. Se cada camada da aplicação classificasse por conta própria, um ajuste de faixa exigiria mudar vários pontos do código e poderia gerar resultados diferentes para o mesmo lead.
+
 
 ### 3.4. Stored Procedures (Procedimentos Armazenados)
 1. **`sp_registrar_oportunidade_com_evidencia`:** Executa em uma única rotina no servidor o *upsert* da empresa (`ON CONFLICT`), a inserção da evidência, o cálculo da pontuação e a vinculação deduplicada na carteira do freelancer (`REG-06`). Reduz drasticamente a latência de rede (round-trips HTTP/TCP) durante o processamento de lotes de buscas (`busca_runner.py`).
