@@ -1,3 +1,10 @@
+-- =====================================================================
+-- 01_ddl_estrutura.sql — LeadForge
+-- Criação do schema, tabelas, constraints e índices (PostgreSQL 15+)
+-- Banco: criar uma vez, fora deste script: CREATE DATABASE leadforge_db;
+-- =====================================================================
+DROP SCHEMA IF EXISTS leadforge CASCADE; -- permite reexecutar do zero
+CREATE SCHEMA leadforge;
 SET search_path TO leadforge, public;
 
 -- ============================================================================
