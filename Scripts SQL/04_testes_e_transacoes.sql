@@ -113,28 +113,30 @@ JOIN leadforge.perfil_freelancer p ON p.usuario_id = u.id
 WHERE u.email = 'fernanda.lima@webstudio.com.br';
 
 
--- CENÁRIO 2: Simulação de falha no meio da transação e reversão atômica (ROLLBACK)
--- Tenta atualizar uma oportunidade e inserir uma sugestão de abordagem inválida
--- (violando integridade referencial / regra de negócio), desfazendo toda a operação.
+
+-- CENÁRIO 2: Falha real ao vincular a sugestão de IA
+-- Demonstra ROLLBACK TO SAVEPOINT (recuperação parcial) e ROLLBACK completo
 BEGIN;
-
-    -- Passo 1: Atualiza status da oportunidade 3 para 'contatado'
-    UPDATE leadforge.oportunidade
-       SET status_contato = 'contatado'
-     WHERE id = 3;
-
-    -- Passo 2: Simula falha ao tentar vincular sugestão a uma oportunidade inexistente (ID 99999)
-    -- Em caso de erro na aplicação/banco, executa-se ROLLBACK para não deixar status inconsistente.
-    SAVEPOINT antes_abordagem_ia;
-
-    -- Simulação do rollback explícito após detecção de inconsistência:
-    ROLLBACK TO SAVEPOINT antes_abordagem_ia;
-    ROLLBACK;
-
--- Confirma que a oportunidade 3 permaneceu intacta com status 'novo' (Atomicidade garantida)
-SELECT id, status_contato, pontuacao
-FROM leadforge.oportunidade
+-- Passo 1: avança o funil da oportunidade 3
+UPDATE leadforge.oportunidade
+SET status_contato = 'contatado'
 WHERE id = 3;
+SAVEPOINT antes_abordagem_ia;
+-- Passo 2: falha proposital — a oportunidade 99999 não existe
+INSERT INTO leadforge.sugestao_abordagem
+(oportunidade_id, texto_explicacao, rascunho_mensagem, gerada_em)
+VALUES (99999, 'Teste de falha', 'Teste de falha', CURRENT_TIMESTAMP);
+-- ERRO esperado: violates foreign key constraint "fk_sugestao_oportunidade"
+-- Passo 3: recupera a transação até o ponto seguro
+ROLLBACK TO SAVEPOINT antes_abordagem_ia;
+-- Ainda dentro da transação: o UPDATE continua pendente (esperado: 'contatado')
+SELECT id, status_contato FROM leadforge.oportunidade WHERE id = 3;
+-- Passo 4: sem a abordagem, o status sozinho ficaria inconsistente — desfaz tudo
+ROLLBACK;
+-- Resultado final: status de volta ao original (esperado: 'novo')
+SELECT id, status_contato, pontuacao FROM leadforge.oportunidade WHERE id =
+3;
+
 
 
 -- ============================================================================
