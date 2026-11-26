@@ -185,3 +185,55 @@ INSERT INTO leadforge.sugestao_abordagem (oportunidade_id, texto_explicacao, ras
 (7, 'O Instituto Oral Campolim apresenta protocolo HTTP inseguro e layout não responsivo para smartphones.',
     'Olá, tudo bem? Acompanho clínicas odontológicas no Campolim e notei que o site do Instituto Oral ainda não possui certificado HTTPS nem versão otimizada para celular. Posso preparar uma proposta objetiva para atualizar a presença digital da clínica?',
     'gpt-4o-mini', FALSE, FALSE);
+
+-- -------------------------------------------------------------------------------
+-- Complemento da carga: 10 freelancers adicionais
+-- Total: 15 usuários e 15 perfis (edital: 15 a 20 registros por tabela principal)
+-- --------------------------------------------------------------------------------
+INSERT INTO leadforge.usuario (nome, email, senha_hash, aceite_lgpd) VALUES
+('Ana Ribeiro', 'ana.ribeiro@devfreela.com.br',
+'scrypt:32768:8:1$hash_ana_06', TRUE),
+('Bernardo Tavares', 'bernardo.tavares@codestudio.com.br',
+'scrypt:32768:8:1$hash_bernardo_07', TRUE),
+('Carla Nunes', 'carla.nunes@webcraft.com.br',
+'scrypt:32768:8:1$hash_carla_08', TRUE),
+('Diego Martins', 'diego.martins@pixeldev.com.br',
+'scrypt:32768:8:1$hash_diego_09', TRUE),
+('Elisa Prado', 'elisa.prado@sitesprado.com.br',
+'scrypt:32768:8:1$hash_elisa_10', TRUE),
+('Felipe Rocha', 'felipe.rocha@frontlab.com.br',
+'scrypt:32768:8:1$hash_felipe_11', TRUE),
+('Gabriela Souza', 'gabriela.souza@designweb.com.br',
+'scrypt:32768:8:1$hash_gabriela_12', TRUE),
+('Henrique Lopes', 'henrique.lopes@lopesdev.com.br',
+'scrypt:32768:8:1$hash_henrique_13', TRUE),
+('Isabela Moraes', 'isabela.moraes@studioim.com.br',
+'scrypt:32768:8:1$hash_isabela_14', TRUE),
+('João Pereira', 'joao.pereira@jpwebsites.com.br',
+'scrypt:32768:8:1$hash_joao_15', TRUE);
+INSERT INTO leadforge.perfil_freelancer (usuario_id, cidade, estado,
+tom_comunicacao)
+SELECT u.id, v.cidade, v.estado, v.tom
+FROM (VALUES
+('ana.ribeiro@devfreela.com.br', 'Sorocaba', 'SP',
+'amigavel'),
+('bernardo.tavares@codestudio.com.br', 'Votorantim', 'SP',
+'direto'),
+('carla.nunes@webcraft.com.br', 'Itu', 'SP',
+'formal'),
+('diego.martins@pixeldev.com.br', 'Campinas', 'SP',
+'amigavel'),
+('elisa.prado@sitesprado.com.br', 'Sorocaba', 'SP',
+'formal'),
+('felipe.rocha@frontlab.com.br', 'Jundiaí', 'SP',
+'direto'),
+('gabriela.souza@designweb.com.br', 'Salto', 'SP',
+'amigavel'),
+('henrique.lopes@lopesdev.com.br', 'São Paulo', 'SP',
+'formal'),
+('isabela.moraes@studioim.com.br', 'Indaiatuba', 'SP',
+'amigavel'),
+('joao.pereira@jpwebsites.com.br', 'Itapetininga', 'SP',
+'direto')
+) AS v(email, cidade, estado, tom)
+JOIN leadforge.usuario u ON u.email = v.email;
