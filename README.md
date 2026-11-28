@@ -18,6 +18,7 @@ Desenvolvimento de Sistemas, FATEC Sorocaba.
 | `Scripts SQL/03_programacao_avancada.sql` | Views, funções escalares, stored procedures e triggers |
 | `Scripts SQL/04_testes_e_transacoes.sql` | Testes dos objetos, transações ACID (COMMIT e ROLLBACK com SAVEPOINT) e EXPLAIN ANALYZE |
 | `LeadForge_Apresentacao_BancoDeDados.pptx` / `.pdf` | Slides da apresentação |
+| Video de apresentação | https://youtu.be/0DtMJWPe_Oo |
 
 ## Como executar
 
